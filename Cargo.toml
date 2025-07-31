@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-default = ["gpio_tests"]
+default = ["gpio_tests", "dma"]
 gpio_tests = []
+dma = []
 
 [dependencies]
 ctrlc = "3.4.7"
+memmap2 = "0.9.7"
