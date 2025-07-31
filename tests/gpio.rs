@@ -8,9 +8,10 @@ const LOOPBACK_1: u32 = 21;
 #[cfg(feature = "gpio_tests")]
 #[test]
 fn test_blink() -> Result<(),GpioError>{
+    use futures::executor::block_on;
     use rs_gpio::conn::PigpioConnection;
 
-    let manager = PigpioConnection::new();
+    let manager = block_on(PigpioConnection::new()).unwrap();
     let mut gpio: GpioPin<Output, BLINK_PIN> = manager.register_gpio();
 
     for _ in 0..2 {
