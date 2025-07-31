@@ -1,44 +1,45 @@
-use rs_gpio::{self, new_gpio_input};
-#[cfg(feature = "gpio_tests")]
-use rs_gpio::errors::GpioError;
-use crate::{rs_gpio::c_interface::{gpioInitialise, gpioSetMode, gpioTerminate}};
-use rs_gpio::{c_interface::{gpioDelay}, Level};
-use rs_gpio::{new_gpio_output, GpioMode};
+use rs_gpio::{errors::GpioError, gpio::{GpioPin, Level}, pin_modes::{Input, Output}};
+use rs_gpio::wrappers::{pigpio_init, pigpio_uninit, gpio_delay};
 
-const PIN_0: u32 = 14;
-const PIN_1: u32 = 14;
+const BLINK_PIN: u32 = 14;
+const LOOPBACK_0: u32 = 20;
+const LOOPBACK_1: u32 = 21;
 
 #[cfg(feature = "gpio_tests")]
 #[test]
 fn test_blink() -> Result<(),GpioError>{
-    unsafe{
 
-        gpioInitialise();
-        let mut gpio = new_gpio_output::<PIN_0>();
+    pigpio_init().unwrap();
 
-        for _ in 0..10 {
-            gpio.set(Level::ON)?;
-            gpioDelay(500000);
-            gpio.set(Level::OFF)?;
-            gpioDelay(500000);
-        }
-        gpioTerminate();
+    let mut gpio: GpioPin<Output, BLINK_PIN> = GpioPin::new();
+
+    for _ in 0..10 {
+
+        gpio.set(Level::ON)?;
+        gpio_delay(500000);
+        gpio.set(Level::OFF)?;
+        gpio_delay(500000);
     }
+
+    pigpio_uninit();
+
     Ok(())
 }
 
 fn test_loopback() -> Result<(),GpioError>{
-    unsafe{
-        gpioInitialise();
-        let mut out = new_gpio_output::<PIN_0>();
-        let input = new_gpio_input::<PIN_1>();
+    pigpio_init().unwrap();
 
-        out.set(Level::ON)?;
-        assert_eq!(input.get()?, Level::ON);
+    let mut output: GpioPin<Output, LOOPBACK_0> = GpioPin::new();
+    let input: GpioPin<Input, LOOPBACK_1>  = GpioPin::new();
 
-        out.set(Level::OFF)?;
-        assert_eq!(input.get()?, Level::OFF);
-        gpioTerminate();
-    }
+    output.set(Level::ON)?;
+    gpio_delay(5000); // wait a tiny amount of time
+    assert_eq!(input.get()?, Level::ON);
+
+    output.set(Level::OFF)?;
+    gpio_delay(5000); // wait a tiny amount of time
+    assert_eq!(input.get()?, Level::OFF);
+
+    pigpio_uninit();
     Ok(())
 }

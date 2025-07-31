@@ -12,11 +12,12 @@ unsafe extern "C" {
     pub fn gpioDelay(micros: u32) -> u32;
 }
 
-const OK: i32 = 0;
-const INIT_FAILED: i32 = -1;
-const BAD_USER_GPIO: i32 = -2;
-const BAD_GPIO: i32 = -3;
-const BAD_MODE: i32 = -4;
-const BAD_LEVEL: i32 = -5;
-const BAD_PUD: i32 = -6;
-const DEFAULT_ERROR: &str = "Unknown error.";
+pub mod consts{
+    pub const OK: i32 = 0;
+    pub const INIT_FAILED: i32 = -1;
+    pub const BAD_USER_GPIO: i32 = -2;
+    pub const BAD_GPIO: i32 = -3;
+    pub const BAD_MODE: i32 = -4;
+    pub const BAD_LEVEL: i32 = -5;
+    pub const BAD_PUD: i32 = -6;
+}
