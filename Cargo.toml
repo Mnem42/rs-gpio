@@ -9,5 +9,7 @@ gpio_tests = []
 dma = []
 
 [dependencies]
+apigpio = "1.0.1"
 ctrlc = "3.4.7"
+futures = "0.3.31"
 memmap2 = "0.9.7"

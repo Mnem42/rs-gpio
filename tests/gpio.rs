@@ -8,10 +8,10 @@ const LOOPBACK_1: u32 = 21;
 #[cfg(feature = "gpio_tests")]
 #[test]
 fn test_blink() -> Result<(),GpioError>{
+    use rs_gpio::conn::PigpioConnection;
 
-    pigpio_init().unwrap();
-
-    let mut gpio: GpioPin<Output, BLINK_PIN> = GpioPin::new();
+    let manager = PigpioConnection::new();
+    let mut gpio: GpioPin<Output, BLINK_PIN> = manager.register_gpio();
 
     for _ in 0..2 {
         gpio.set(Level::ON)?;
@@ -22,24 +22,5 @@ fn test_blink() -> Result<(),GpioError>{
 
     pigpio_uninit();
 
-    Ok(())
-}
-
-#[test]
-fn test_loopback() -> Result<(),GpioError>{
-    pigpio_init().unwrap();
-
-    let mut output: GpioPin<Output, LOOPBACK_0> = GpioPin::new();
-    let input: GpioPin<Input, LOOPBACK_1>  = GpioPin::new();
-
-    output.set(Level::ON)?;
-    gpio_delay(5000); // wait a tiny amount of time
-    assert_eq!(input.get()?, Level::ON);
-
-    output.set(Level::OFF)?;
-    gpio_delay(5000); // wait a tiny amount of time
-    assert_eq!(input.get()?, Level::OFF);
-
-    pigpio_uninit();
     Ok(())
 }

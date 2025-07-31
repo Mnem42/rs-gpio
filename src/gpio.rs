@@ -1,57 +1,33 @@
-use std::marker::PhantomData;
-
-use crate::{c_interface::{gpioRead, gpioSetMode, gpioWrite}, errors::GpioError, pin_modes::{Input, Output, PinMode}};
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub enum Level {
-    ON = 1,
-    OFF = 0
-}
-
-impl TryFrom<i32> for Level{
-    type Error = GpioError;
-
-    fn try_from(value: i32) -> Result<Self, Self::Error> {
-        match value{
-            0 => Ok(Self::OFF),
-            1 => Ok(Self::ON),
-            _ => Err(GpioError::BadGpio)
-        }
-    }
-}
+use std::{marker::PhantomData, rc::Rc};
+use futures::executor::block_on;
+use apigpio::{Connection, Level};
+use crate::{errors::GpioError, pin_modes::{Input, Output, PinMode}};
 
 pub struct GpioPin<M: PinMode, const N: u32>{
+    conn: Rc<Connection>,
     state: M // The pinmode should also store state
 }
 
 impl<M: PinMode, const N:u32> GpioPin<M,N>{
-    pub fn new() -> Self{
-        GpioPin { state: M::default() }
+    /// Shouldn't normally be run directly
+    pub(crate) fn new(conn: Rc<Connection>) -> Self{
+        GpioPin { 
+            conn: conn,
+            state: M::default()
+        }
     }
 }
 
 impl<const N: u32> GpioPin<Output, N>{
     pub fn set(&mut self, value: Level) -> Result<(), GpioError>{
         self.state.state = value;
-        unsafe{ 
-            let result = gpioWrite(N, value as u32);
-            match result{
-                0 => Ok(()),
-                -3 => Err(GpioError::BadGpio),
-                x => Err(GpioError::OtherError(x))  
-            }
-        }
+        let result = block_on(self.conn.gpio_write(N, value))?;
+        Ok(())
     }
 }
 
 impl<const N: u32> GpioPin<Input, N>{
     pub fn get(&self) -> Result<Level, GpioError>{
-        unsafe{ 
-            let result = gpioRead(N);
-            match result{
-                -3 => Err(GpioError::BadGpio), 
-                x => Ok(Level::try_from(x)?)
-            }
-        }
+        Ok(block_on(self.conn.gpio_read(N))?)
     }
 }

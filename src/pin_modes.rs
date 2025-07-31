@@ -1,5 +1,4 @@
-use crate::gpio::Level;
-
+use apigpio::Level;
 
 const INPUT: u32  = 0;
 const OUTPUT: u32 = 1;
@@ -28,7 +27,7 @@ impl Default for Input{
 }
 
 impl Default for Output{
-    fn default() -> Self { Output { state: Level::OFF} }
+    fn default() -> Self { Output { state: Level::L} }
 }
 
 impl PinMode for Input {}
