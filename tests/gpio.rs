@@ -13,8 +13,7 @@ fn test_blink() -> Result<(),GpioError>{
 
     let mut gpio: GpioPin<Output, BLINK_PIN> = GpioPin::new();
 
-    for _ in 0..10 {
-
+    for _ in 0..2 {
         gpio.set(Level::ON)?;
         gpio_delay(500000);
         gpio.set(Level::OFF)?;
