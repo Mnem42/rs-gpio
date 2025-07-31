@@ -1,5 +1,4 @@
-use rs_gpio::{errors::GpioError, gpio::{GpioPin, Level}, pin_modes::{Input, Output}};
-use rs_gpio::wrappers::{pigpio_init, pigpio_uninit, gpio_delay};
+use rs_gpio::{errors::GpioError, gpio::{GpioPin}, pin_modes::Output};
 
 const BLINK_PIN: u32 = 14;
 const LOOPBACK_0: u32 = 20;
@@ -15,13 +14,16 @@ fn test_blink() -> Result<(),GpioError>{
     let mut gpio: GpioPin<Output, BLINK_PIN> = manager.register_gpio();
 
     for _ in 0..2 {
-        gpio.set(Level::ON)?;
-        gpio_delay(500000);
-        gpio.set(Level::OFF)?;
-        gpio_delay(500000);
-    }
+        use core::time;
+        use std::thread::sleep;
 
-    pigpio_uninit();
+        use apigpio::Level;
+
+        gpio.set(Level::H)?;
+        sleep(time::Duration::from_secs(1));
+        gpio.set(Level::L)?;
+        sleep(time::Duration::from_secs(1));
+    }
 
     Ok(())
 }
