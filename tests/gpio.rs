@@ -26,6 +26,7 @@ fn test_blink() -> Result<(),GpioError>{
     Ok(())
 }
 
+#[test]
 fn test_loopback() -> Result<(),GpioError>{
     pigpio_init().unwrap();
 
