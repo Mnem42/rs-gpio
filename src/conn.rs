@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use apigpio::Connection;
-use crate::{gpio::GpioPin, pin_modes::PinMode};
+use crate::{gpio::GpioPin, pin_modes::private::PinMode};
 
 pub struct PigpioConnection {
     conn: Rc<Connection>

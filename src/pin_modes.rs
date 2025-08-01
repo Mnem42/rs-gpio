@@ -9,7 +9,9 @@ const ALT3: u32   = 7;
 const ALT4: u32   = 3;
 const ALT5: u32   = 2;
 
-pub(crate) trait PinMode: Into<u32> + Default {}
+pub(crate) mod private {
+    pub trait PinMode: Into<u32> + Default {}
+}
 
 pub struct Input {}
 pub struct Output {pub state: Level}
@@ -30,5 +32,5 @@ impl Default for Output{
     fn default() -> Self { Output { state: Level::L} }
 }
 
-impl PinMode for Input {}
-impl PinMode for Output {}
+impl private::PinMode for Input {}
+impl private::PinMode for Output {}

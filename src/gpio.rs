@@ -1,7 +1,7 @@
-use std::{marker::PhantomData, rc::Rc};
+use std::rc::Rc;
 use futures::executor::block_on;
 use apigpio::{Connection, Level};
-use crate::{errors::GpioError, pin_modes::{Input, Output, PinMode}};
+use crate::{errors::GpioError, pin_modes::{Input, Output}, pin_modes::private::PinMode};
 
 pub struct GpioPin<M: PinMode, const N: u32>{
     conn: Rc<Connection>,
