@@ -6,7 +6,7 @@ const LOOPBACK_1: u32 = 21;
 
 #[cfg(feature = "gpio_tests")]
 #[tokio::test]
-fn test_blink() -> Result<(),GpioError>{
+async fn test_blink() -> Result<(),GpioError>{
     use futures::executor::block_on;
     use rs_gpio::conn::PigpioConnection;
 
